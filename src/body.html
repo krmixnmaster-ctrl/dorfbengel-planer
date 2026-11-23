@@ -1,0 +1,133 @@
+<body>
+<header>
+  <h1>Dorfbengel · Setlist 2027</h1>
+  <div class="stats" id="stats"><span>Lade Daten …</span></div>
+  <span class="spacer"></span>
+  <span class="status" id="status" aria-live="polite"></span>
+  <span class="newcount" id="newCount" role="status"></span>
+  <button id="suggBtn" type="button" hidden>+ Vorschlag einreichen</button>
+  <button id="addSong" type="button" hidden>+ Song</button>
+  <button id="addSet" type="button" hidden>+ Set</button>
+  <button id="bpmBtn" type="button" hidden title="Fehlende BPM bei Vorschlägen automatisch suchen"></button>
+  <button id="archBtn" type="button" hidden>Fremdsetlisten</button>
+  <button id="meBtn" type="button" hidden title="Namen ändern"></button>
+  <button id="exportBtn" class="primary" type="button">Setlist erstellen</button>
+</header>
+<div class="banner" id="banner"></div>
+<main id="main">
+  <section class="col" aria-labelledby="hPool">
+    <h2 id="hPool">Vorschläge <small id="poolCount"></small></h2>
+    <div class="hint" id="poolHint">Karten in ein Set ziehen. Medleys bewegen sich immer als Ganzes. Mit 👍 / 👎 abstimmen.</div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Titel oder Interpret suchen" aria-label="Vorschläge durchsuchen">
+    </div>
+    <div class="tools" role="group" aria-label="Nach Einschätzung filtern">
+      <button class="chip" data-f="" aria-pressed="true" type="button">Alle</button>
+      <button class="chip" data-f="passt" aria-pressed="false" type="button">passt</button>
+      <button class="chip" data-f="prüfen" aria-pressed="false" type="button">prüfen</button>
+      <button class="chip" data-f="fraglich" aria-pressed="false" type="button">fraglich</button>
+      <button class="chip" data-f="medley" aria-pressed="false" type="button">Medleys</button>
+      <button class="chip" data-f="neu" aria-pressed="false" type="button">Neu (14 Tage)</button>
+    </div>
+    <div class="scroll"><div class="list" id="pool" data-zone="pool"></div></div>
+  </section>
+  <section class="col" aria-labelledby="hSets">
+    <h2 id="hSets">Setlist <small id="setCount"></small></h2>
+    <div class="hint" id="setHint">Reihenfolge per Ziehen ändern. „+ Prosit“ an einem Titel setzt einen Prosit direkt dahinter, beliebig oft. Karte antippen, um Lead-Gesang oder Notiz zu bearbeiten.</div>
+    <div class="scroll" id="sets"></div>
+  </section>
+  <section class="col wait" aria-labelledby="hWait">
+    <h2 id="hWait">Wartebereich <small id="waitCount"></small></h2>
+    <div class="hint">Geprobte Songs, die gerade nicht im Programm sind. Bleiben abrufbar.</div>
+    <div class="scroll"><div class="list" id="wait" data-zone="wait"></div></div>
+  </section>
+</main>
+
+<dialog id="edit">
+  <form method="dialog" id="editForm">
+    <h3 id="editTitle">Song bearbeiten</h3>
+    <label for="fT">Titel</label><input id="fT" required>
+    <label for="fA">Interpret</label><input id="fA">
+    <label for="fL">Lead-Gesang / Rolle</label><input id="fL" placeholder="z. B. Lead w, Lead m 1, ALLE">
+    <label for="fB">BPM</label><div class="inl"><input id="fB"><button type="button" id="fBpm">BPM ermitteln</button></div>
+    <label for="fS">Einschätzung</label>
+    <select id="fS"><option value="">–</option><option>passt</option><option>prüfen</option><option>fraglich</option></select>
+    <fieldset class="fmtset"><legend>Format für später</legend>
+      <label class="chk" for="fMp3"><input type="checkbox" id="fMp3"> MP3 / Playback</label>
+      <label class="chk" for="fMidi"><input type="checkbox" id="fMidi"> MIDI</label>
+    </fieldset>
+    <label for="fN">Notiz</label><textarea id="fN" rows="3"></textarea>
+    <label for="fC">Kommentar des Einreichers</label><textarea id="fC" rows="2"></textarea>
+    <p class="dlgnote" id="fInfo"></p>
+    <div class="row">
+      <button type="button" id="delBtn">Löschen</button>
+      <span class="spacer"></span>
+      <button type="button" id="cancelBtn">Abbrechen</button>
+      <button type="submit" class="primary" id="saveBtn">Speichern</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="sugg">
+  <form method="dialog" id="suggForm">
+    <h3 id="suggTitle">Song vorschlagen</h3>
+    <label for="sT">Titel <span class="req">*</span></label><input id="sT" required autocomplete="off" maxlength="200">
+    <label for="sA">Interpret <span class="req">*</span></label><input id="sA" required autocomplete="off">
+    <label for="sL">Wer soll singen?</label><input id="sL" placeholder="z. B. Nici, Heimi, Olli, Ralf (Rap)" autocomplete="off">
+    <label for="sC">Kommentar: Warum dieser Song, und wo soll er rein? <span class="req">*</span></label>
+    <textarea id="sC" rows="4" required placeholder="z. B. Mitsing-Hymne, passt in Set 2 nach Major Tom als Gänsehaut-Moment"></textarea>
+    <label for="sB">BPM</label><input id="sB" inputmode="numeric" placeholder="leer lassen – wird automatisch gesucht">
+    <div class="row">
+      <button type="button" id="sDel" hidden>Löschen</button>
+      <span class="spacer"></span>
+      <button type="button" id="sCancel">Abbrechen</button>
+      <button type="submit" class="primary" id="sSave">Einreichen</button>
+    </div>
+    <p class="status" id="sMsg" aria-live="polite"></p>
+  </form>
+</dialog>
+<dialog id="exportDlg" class="wide">
+  <h3>Setlist erstellen</h3>
+  <p class="dlgnote">Vorschau: DIN A4 quer, ein Set pro Spalte. Zum Drucken die PDF herunterladen und öffnen.</p>
+  <div class="previewWrap"><canvas id="sheet" aria-label="Vorschau der Setlist als A4-Blatt"></canvas></div>
+  <div class="row">
+    <span class="status" id="copyMsg" aria-live="polite"></span><span class="spacer"></span>
+    <button type="button" id="closeExport">Schließen</button>
+    <button type="button" id="mailBtn">Per E-Mail (PDF)</button>
+    <button type="button" id="waBtn">Per WhatsApp (PDF)</button>
+    <button type="button" class="primary" id="pdfBtn">PDF herunterladen / Drucken</button>
+  </div>
+  <div class="row" id="sendNext" hidden><span class="status" id="sendHint"></span><span class="spacer"></span><a class="btnlink primary" id="sendLink" href="#" target="_blank" rel="noopener"></a></div>
+</dialog>
+<dialog id="nameDlg">
+  <form method="dialog" id="nameForm">
+    <h3>Wer bist du?</h3>
+    <p class="dlgnote">Dein Name steht bei deinen Vorschlägen und Stimmen. Er wird nur auf diesem Gerät gemerkt.</p>
+    <label for="nmIn">Vorname</label><input id="nmIn" required maxlength="40" autocomplete="given-name">
+    <div class="row"><span class="spacer"></span><button type="button" id="nmCancel">Später</button><button type="submit" class="primary">Weiter</button></div>
+  </form>
+</dialog>
+<dialog id="archDlg" class="wide">
+  <h3>Fremdsetlisten <small class="muted">nur für dich sichtbar</small></h3>
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tabNew" aria-selected="true">Neu einlesen</button>
+    <button type="button" role="tab" id="tabArch" aria-selected="false">Archiv</button>
+  </div>
+  <section id="paneNew">
+    <div class="grid2">
+      <div><label for="imBand">Band <span class="req">*</span></label><input id="imBand" placeholder="z. B. Partyband XY"></div>
+      <div><label for="imAnlass">Anlass / Datum</label><input id="imAnlass" placeholder="z. B. Kerwa Kitzingen 2026"></div>
+    </div>
+    <label for="imFile">Datei (PDF, Foto JPG/PNG, Word .docx, TXT, CSV) – wird nur in deinem Browser gelesen</label><input id="imFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.txt,.csv,image/png,image/jpeg,image/webp,application/pdf">
+    <label for="imText">… oder Text einfügen (eine Zeile pro Song, z. B. „Titel – Interpret“)</label>
+    <textarea id="imText" rows="6" placeholder="01 Atemlos - Helene Fischer&#10;02 Major Tom - Peter Schilling"></textarea>
+    <div class="row"><span class="status" id="imMsg" aria-live="polite"></span><span class="spacer"></span><button type="button" id="imParse">Erkennen</button></div>
+    <div id="imReview" hidden>
+      <div class="row left"><label class="chk"><input type="checkbox" id="imAll" checked> alle</label><button type="button" id="imSwap" title="Titel und Interpret in allen Zeilen tauschen">Titel ⇄ Interpret</button><button type="button" id="imAdd">+ Zeile</button><span class="spacer"></span><span class="status" id="imCount"></span></div>
+      <div class="tblwrap"><table class="imtbl"><thead><tr><th></th><th>Titel</th><th>Interpret</th><th></th></tr></thead><tbody id="imRows"></tbody></table></div>
+      <div class="row"><label class="chk"><input type="checkbox" id="imToPool"> markierte Titel gleich in die Vorschläge übernehmen</label><span class="spacer"></span><button type="button" class="primary" id="imSave">Im Archiv speichern</button></div>
+    </div>
+  </section>
+  <section id="paneArch" hidden><div id="archList"></div></section>
+  <div class="row"><span class="spacer"></span><button type="button" id="archClose">Schließen</button></div>
+</dialog>
+
